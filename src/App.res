@@ -1,47 +1,65 @@
 @module("./logo.svg") external logo: string = "default"
 %%raw(`import './App.css'`)
 
+let initial = Char.StatSet.make(13, 13, 13, 13, 13)
+
+
 @react.component
 let make = () => {
-  let (count, setCount) = React.useState(() => 0)
+  let (stats, setstats) = React.useState(() => initial)
+  let stat_total = () => { stats.cons + stats.dext + stats.inte + stats.strn + stats.wisd }
+  let stat_diff = () => {65 - stat_total()}
+  let stat_change_handler = evt => {
+    ReactEvent.Form.preventDefault(evt)
+    let name = ReactEvent.Form.target(evt)["name"]
+    let newval = ReactEvent.Form.target(evt)["value"]
+    let update = switch newval->Int.fromString {
+        | None => 0
+        | Some(i) => i
+    }
+    switch name {
+        | "con" => setstats(cur => {...cur, cons: update})
+        | "dex" => setstats(cur => {...cur, dext: update})
+        | "int" => setstats(cur => {...cur, inte: update})
+        | "str" => setstats(cur => {...cur, strn: update})
+        | "wis" => setstats(cur => {...cur, wisd: update})
+        | _ => Console.error("bad input")
+    }
+  }
+      <div className="App">
+      
+      <div className="flex items-start bg-white rounded-xl shadow-lg text-xl font-medium">
+      <label htmlFor="con" className="rounded-xl shadow-lg h-16 w-32 shrink-0">
+      {"con: "->React.string}
+      <input type_="number" id="con" name="con" min="0" value={stats.cons->Int.toString} onChange={stat_change_handler} className="w-16"/> 
+      </label>
 
-  <div className="App">
-    <header className="App-header">
-      <img src={logo} className="App-logo" alt="logo" />
-      <p> {"Hello Vite + React + ReScript!"->React.string} </p>
-      <p className="my-6">
-        // the button style comes from https://tailwind-elements.com/docs/standard/components/buttons/#neutral
-        <button className="inline-block rounded bg-neutral-50 px-6 pb-2 pt-2.5 text-sm font-medium uppercase leading-normal text-neutral-800 shadow-[0_4px_9px_-4px_#cbcbcb] transition duration-150 ease-in-out hover:bg-neutral-100 hover:shadow-[0_8px_9px_-4px_rgba(203,203,203,0.3),0_4px_18px_0_rgba(203,203,203,0.2)] focus:bg-neutral-100 focus:shadow-[0_8px_9px_-4px_rgba(203,203,203,0.3),0_4px_18px_0_rgba(203,203,203,0.2)] focus:outline-none focus:ring-0 active:bg-neutral-200 active:shadow-[0_8px_9px_-4px_rgba(203,203,203,0.3),0_4px_18px_0_rgba(203,203,203,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(251,251,251,0.3)] dark:hover:shadow-[0_8px_9px_-4px_rgba(251,251,251,0.1),0_4px_18px_0_rgba(251,251,251,0.05)] dark:focus:shadow-[0_8px_9px_-4px_rgba(251,251,251,0.1),0_4px_18px_0_rgba(251,251,251,0.05)] dark:active:shadow-[0_8px_9px_-4px_rgba(251,251,251,0.1),0_4px_18px_0_rgba(251,251,251,0.05)]" onClick={_e => setCount(count => count + 1)}>
-          {`count is: ${count->Int.toString}`->React.string}
-        </button>
-      </p>
-      <p>
-        {"Edit "->React.string}
-        <code> {"App.res"->React.string} </code>
-        {" and save to test HMR updates."->React.string}
-      </p>
-      <p>
-        <a
-          className="App-link" href="https://reactjs.org" target="_blank" rel="noopener noreferrer">
-          {"Learn React"->React.string}
-        </a>
-        {" | "->React.string}
-        <a
-          className="App-link"
-          href="https://vitejs.dev/guide/features.html"
-          target="_blank"
-          rel="noopener noreferrer">
-          {"Vite Docs"->React.string}
-        </a>
-        {" | "->React.string}
-        <a
-          className="App-link"
-          href="https://rescript-lang.org/docs/react/latest/introduction"
-          target="_blank"
-          rel="noopener noreferrer">
-          {"ReScript Docs"->React.string}
-        </a>
-      </p>
-    </header>
+    <label htmlFor="dex" className="rounded-xl shadow-lg h-16 w-32 shrink-0">
+    {"dex: "->React.string}
+    <input type_="number" id="dex" name="dex" min="0" value={stats.dext->Int.toString} onChange={stat_change_handler}  className="w-16" />
+    </label>
+
+    <label htmlFor="int" className="rounded-xl shadow-lg h-16 w-32 shrink-0">
+    {"int: "->React.string}
+    <input type_="number" id="int" name="int" min="0" value={stats.inte->Int.toString} onChange={stat_change_handler}  className="w-16" /> 
+    </label>
+
+    <label htmlFor="str" className="rounded-xl shadow-lg h-16 w-32 shrink-0">
+    {"str: "->React.string}
+    <input type_="number" id="str" name="str" min="0" value={stats.strn->Int.toString} onChange={stat_change_handler}  className="w-16" /> 
+    </label>
+
+    <label htmlFor="wis" className="rounded-xl shadow-lg h-16 w-32 shrink-0">
+    {"wis: "->React.string}
+    <input type_="number" id="wis" name="wis" min="0" value={stats.wisd->Int.toString} onChange={stat_change_handler}  className="w-16" /> 
+    </label>
+
+    <p className="rounded-xl shadow-lg h-16 w-32 shrink-0">{"total: "->React.string}{stat_total()->React.int}</p>
+    <p className="rounded-xl shadow-lg h-16 w-32 shrink-0">{"remaining: "->React.string}{stat_diff()->React.int}</p>
+    </div>
+
+    <div className="skill-bonuses">
+
   </div>
+    </div>
 }
